@@ -1,0 +1,40 @@
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Logs
+logs
+*.log*
+
+# Optional eslint cache
+.eslintcache
+
+# Dependency directories
+node_modules/
+
+# dotenv environment variable files
+.env*
+
+# NPM Related files
+package-lock.json
+.npm
+
+# temp files
+.temp
+.cache*
+
+# Extra
+project_structure*
+
+# Not ready
+/gui
+
+# Local Items
+/private
+*.bak
+changelog*
