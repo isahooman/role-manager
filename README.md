@@ -1,25 +1,21 @@
 <h1 align="center">
-  <br>Slate<br>
+  <br>Role Manager<br>
 </h1>
 <p align="center">
-  A Discord.js Bot Startup Codebase
+  A Discord.js bot allowing user's to manage assigned roles
 </p>
 
-<h4 align="center">
-  The best way to start your new Discord.js bot.
-</h4>
-
 <p align="center">
-  <a href="https://img.shields.io/github/contributors/isahooman/Slate" >
-    <img src="https://img.shields.io/github/contributors/isahooman/Slate" alt = "Contributors"/>
+  <a href="https://img.shields.io/github/contributors/isahooman/role-manager" >
+    <img src="https://img.shields.io/github/contributors/isahooman/role-manager" alt = "Contributors"/>
   </a>
-  <a href="https://github.com/isahooman/Slate/pulse">
-    <img src="https://img.shields.io/github/commit-activity/m/isahooman/slate" alt = "Activity" />
+  <a href="https://github.com/isahooman/role-manager/pulse">
+    <img src="https://img.shields.io/github/commit-activity/m/isahooman/role-manager" alt = "Activity" />
   </a>
-  <a href="https://img.shields.io/github/issues/isahooman/Slate" >
-    <img src="https://img.shields.io/github/issues/isahooman/Slate" alt="Issues"/>
+  <a href="https://img.shields.io/github/issues/isahooman/role-manager" >
+    <img src="https://img.shields.io/github/issues/isahooman/role-manager" alt="Issues"/>
   </a>
-  <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/version/isahooman/slate">
+  <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/version/isahooman/role-manager">
 </p>
 <br>
 <h2 align="center">Table of Contents</h2>
@@ -32,67 +28,73 @@
 
 ## Key Features
 
-- Easily configurable
-  - Easily change your prefix, bot owners, or developer guild
-  - Select which Discord intents your bot should start with
-  - Select which Discord events should load
-  - Blacklist users and servers
-    - Choose to ignore or leave blacklisted servers
-  - Choose which commands should be loaded
-  - Determine active logging levels
-  - Easily Customizable bot presence
-- Comprehensive Logging and Debugging
-- Support for all Discord.js Events
-- Flexible commands
-  - Supports slash and prefix commands
-  - choose if commands are usable in DMs
-  - optional NSFW properties
-  - Custom aliases
-  - Customizable cooldowns
-    - Per user
-    - Per server
-    - Global
+- Easy role permissions management
 
-<br><br>
+  - Server admins can add/remove managers to any role
+
+- Self service role management
+  - Users can add/remove their roles for any user
+  - Users can customize their role's color or name
+  - Users can check who has certain roles with the `inrole` command
+  - For ~~role goblins~~ collectors there's the `collection` command which shows the roles the user has and what they're missing
+    <br><br>
 
 ### Commands
 
 - Owner<br>
-  - <span style="color:lightgreen;">BotClear</span> - Mass deletes bot commands used in the current channel.<br>
-  - <span style="color:lightgreen;">CommandToggle</span> - Toggles the given command.<br>
+
+  - <span style="color:lightgreen;">Cache</span> - Manage the bot's cache.<br>
+  - <span style="color:lightgreen;">CommandToggle</span> - Toggles the specified command.<br>
   - <span style="color:lightgreen;">Deploy</span> - Deploys global and guild slash commands.<br>
   - <span style="color:lightgreen;">Eval</span> - Evaluates given code.<br>
   - <span style="color:lightgreen;">EventToggle</span> - Toggles the given Discord.js event.<br>
   - <span style="color:lightgreen;">Fail</span> - Tests a given error.<br>
+  - <span style="color:lightgreen;">Leave</span> - Makes the bot leave the current server.<br>
   - <span style="color:lightgreen;">Logs</span> - Retrieves the latest bot logs.<br>
   - <span style="color:lightgreen;">LogTest</span> - Tests each logger level.<br>
   - <span style="color:lightgreen;">LogToggle</span> - Toggles logging for the specified level.<br>
-  - <span style="color:lightgreen;">Raw</span> - Relays the raw data of the replied message.<br>
-  - <span style="color:lightgreen;">Reload</span> - Reloads a either a given command or all commands.<br>
-  - <span style="color:lightgreen;">Shutdown</span> - Shuts the bot down gracefully.<br>
-  - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options.<br>
+  - <span style="color:lightgreen;">Permissions</span> - Check the bot's permissions.<br>
   - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed.<br>
+  - <span style="color:lightgreen;">Reload</span> - Reloads either a given command or all commands.<br>
+  - <span style="color:lightgreen;">Shutdown</span> - Shuts the bot down gracefully.<br>
+
+- Roles<br>
+
+  - <span style="color:lightgreen;">Collection</span> - View a user's role collection.<br>
+  - <span style="color:lightgreen;">InRole</span> - View all users in one or more roles.<br>
+  - <span style="color:lightgreen;">Manager</span> - Add or remove role managers.<br>
+  - <span style="color:lightgreen;">Role</span> - Manage roles (add, remove, customize).<br>
+
 - Miscellaneous<br>
+
   - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord.<br>
+
 - Info<br>
-  - <span style="color:lightgreen;">About</span> - Shows information about the bot.<br>
-- Utility
-  - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
+
+  - <span style="color:lightgreen;">Stats</span> - Shows bot statistics and performance metrics.<br>
+  - <span style="color:lightgreen;">UserInfo</span> - Shows information about a user.<br>
+
+- Utility<br>
+
   - <span style="color:lightgreen;">Avatar</span> - Fetch the provided user's avatar.<br>
   - <span style="color:lightgreen;">Banner</span> - Fetch the provided user's banner.<br>
-  - <span style="color:lightgreen;">Enlarge</span> - Enlarge the provided emoji.<<br>
+  - <span style="color:lightgreen;">BugReport</span> - Report a bug.<br>
+  - <span style="color:lightgreen;">Emojis</span> - Export server emojis as a zip file.<br>
+  - <span style="color:lightgreen;">Enlarge</span> - Enlarge the provided emoji.<br>
   - <span style="color:lightgreen;">Math</span> - Solve the provided math equation.<br>
-- Fun
-  - <span style="color:lightgreen;">CoinFlip</span> - Flip a Coin!<br>
-  - <span style="color:lightgreen;">Number</span> - Generate a random number within a given range.
+  - <span style="color:lightgreen;">Suggest</span> - Make a suggestion.<br>
+  - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
 
-<br><br>
+- Fun<br>
+
+  - <span style="color:lightgreen;">CoinFlip</span> - Flip a Coin!<br>
+  - <span style="color:lightgreen;">Number</span> - Generate a random number within a given range.<br>
 
 # Getting Started
 
 ## Installation Guide
 
-Slate can be installed by using the following instructions.
+The bot can be installed by using the following instructions.
 <br><br>
 
 ### Linux Command Line Installation
@@ -112,22 +114,23 @@ Slate can be installed by using the following instructions.
 - openSUSE: `sudo zypper install git nodejs npm`
 
 3. **Clone the GitHub repository**
+
 ```bash
-git clone https://github.com/isahooman/Slate.git .
-cd Slate
+git clone https://github.com/isahooman/role-manager.git
+cd role-manager
 ```
 
-4. **Configuring Slate**
+4. **Configuring the bot**
 
-Next you'll need to setup [config.json5](./config/config.json5) as well as the optional extra config files.
+Next you'll need to setup [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```bash
 sudo nano ./config/config.json5
 ```
 
-You can follow the [configuration example](./config/README.md#configjson) here if needed.
+You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.
 
-5. **You're now ready to run slate**
+5. **You're now ready to start the bot**
 
 ```bash
 npm run start
@@ -146,30 +149,30 @@ npm run start
 winget install OpenJS.NodeJS
 ```
 
-2. **Download the zip file of the [Slate Repository](https://github.com/isahooman/Slate/archive/refs/heads/main.zip)**
+2. **Download the zip file for [Role-Manager](https://github.com/isahooman/role-manager/archive/refs/heads/main.zip)**
 
 ```bash
-# Get the zip file of Slate
-curl -uri "https://github.com/isahooman/Slate/archive/main.zip" -Method "GET" -Outfile "Slate.zip"
+# Get the zip file of role-manager
+curl -uri "https://github.com/isahooman/role-manager/archive/main.zip" -Method "GET" -Outfile "role-manager.zip"
 ```
 
 3. **Extract the zip file to a file location of your choice**
 
 ```bash
 # Unzips the zip file to your directory
-tar -xvf Slate.zip
+tar -xvf role-manager.zip
 ```
 
-4. **Configuring Slate**
+4. **Configuring the bot**
 
-Next you'll need to configure your bot in [config.json5](./config/config.json5) as well as the optional extra config files.
+Next you'll need to configure your bot in [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```sh
 # Opens the config file within the notepad text editor
-notepad ./config/config.json5
+notepad ./config/bot/config.json5
 ```
 
-You can follow the [configuration example](./config/README.md#configjson) here if needed.<br>
+You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.<br>
 
 5. **You're now ready to run your bot!**
 
@@ -191,30 +194,30 @@ npm run start
 brew install node
 ```
 
-2. Download the zip file of the [Slate Repository](https://github.com/isahooman/Slate/archive/refs/heads/main.zip)
+2. Download the zip file of the [role-manager](https://github.com/isahooman/role-manager/archive/refs/heads/main.zip)
 
 ```bash
-# Get the zip file of Slate
-curl -L -O https://github.com/isahooman/Slate/archive/main.zip
+# Get the zip file of role-manager
+curl -L -O https://github.com/isahooman/role-manager/archive/main.zip
 ```
 
 3. Extract the zip file to a file location of your choice
 
 ```bash
 # Unzips the zip file to your directory
-tar -xvf Slate-main.zip
+tar -xvf role-manager-main.zip
 ```
 
-4. **Configuring Slate**
+4. **Configuring role-manager**
 
-Next you'll need to configure your bot in [config.json5](./config/config.json5) as well as the optional extra config files.
+Next you'll need to configure your bot in [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```sh
 # Opens the config file within the notepad text editor
 nano ./config/config.json5
 ```
 
-You can follow the [configuration example](./config/README.md#configjson) here if needed.<br>
+You can follow the [configuration example](./config/bot/README.md#configjson5) here if needed.<br>
 
 5. You're now ready to run your bot using the start.sh file!
 
