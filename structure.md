@@ -1,0 +1,141 @@
+
+- [.github]
+  - CONTRIBUTING.md (0.51 KB)
+  - PULL_REQUEST_TEMPLATE.md (0.12 KB)
+- [.vscode]
+  - [scripts]
+    - Project_Tree.ps1 (0.71 KB)
+  - extensions.json (0.31 KB)
+  - settings.json (0.66 KB)
+- [bot]
+  - [commands]
+    - [prefix]
+      - [fun]
+        - coinFlip.js (1.19 KB)
+        - number.js (1.25 KB)
+      - [info]
+        - stats.js (4.81 KB)
+        - userinfo.js (3.62 KB)
+      - [misc]
+        - ping.js (2.56 KB)
+      - [Owner]
+        - cache.js (4.19 KB)
+        - commandtoggle.js (2.64 KB)
+        - delete.js (0.93 KB)
+        - deploy.js (0.51 KB)
+        - eval.js (2.91 KB)
+        - eventtoggle.js (1.25 KB)
+        - fail.js (0.34 KB)
+        - leave.js (1.31 KB)
+        - logs.js (1.72 KB)
+        - logtest.js (0.72 KB)
+        - logtoggle.js (1.08 KB)
+        - permissions.js (1.9 KB)
+        - prefix.js (1.61 KB)
+        - reload.js (3.26 KB)
+        - shutdown.js (0.62 KB)
+      - [roles]
+        - collection.js (7.47 KB)
+        - inrole.js (4.99 KB)
+      - [Utility]
+        - avatar.js (1.77 KB)
+        - banner.js (2 KB)
+        - bugreport.js (1.3 KB)
+        - emojis.js (2.18 KB)
+        - enlarge.js (1.49 KB)
+        - math.js (1.45 KB)
+        - suggest.js (1.28 KB)
+        - temperature.js (2.5 KB)
+      - README.md (2.19 KB)
+    - [slash]
+      - [dev]
+        - [owner]
+          - eval.js (2.96 KB)
+          - fail.js (0.35 KB)
+          - shutdown.js (0.74 KB)
+      - [global]
+        - [misc]
+          - ping.js (1.77 KB)
+        - [roles]
+          - collection.js (3.51 KB)
+          - manager.js (9.25 KB)
+          - role.js (12.37 KB)
+      - README.md (2.38 KB)
+  - [components]
+    - [commands]
+      - commandProxy.js (3.03 KB)
+      - commands.js (9.79 KB)
+      - commandWrapper.js (2.29 KB)
+      - cooldown.js (6.66 KB)
+    - [core]
+      - fileHandler.js (7.76 KB)
+      - loader.js (0.86 KB)
+    - [util]
+      - cache.js (8.07 KB)
+      - colors.js (4.71 KB)
+      - deploy.js (5.21 KB)
+      - events.js (7.07 KB)
+      - logger.js (7.39 KB)
+      - report.js (19.02 KB)
+      - search.js (4.91 KB)
+  - [events]
+    - [channel]
+      - channelCreate.js (0.44 KB)
+      - channelDelete.js (0.45 KB)
+      - channelUpdate.js (1.77 KB)
+    - [client]
+      - ready.js (2.32 KB)
+    - [guild]
+      - guildAvailable.js (0.33 KB)
+      - guildCreate.js (1.04 KB)
+      - guildDelete.js (0.85 KB)
+      - guildUnavailable.js (0.39 KB)
+      - guildUpdate.js (2.07 KB)
+    - [guild Member]
+      - guildMemberAdd.js (0.45 KB)
+      - guildMemberAvailable.js (0.47 KB)
+      - guildMemberRemove.js (0.48 KB)
+      - guildMembersChunk.js (0.34 KB)
+      - guildMemberUpdate.js (1.46 KB)
+    - [interactions]
+      - interactionCreate.js (6.45 KB)
+    - [message]
+      - messageCreate.js (7.31 KB)
+      - messageUpdate.js (7.79 KB)
+    - [misc]
+      - userUpdate.js (0.78 KB)
+    - [role]
+      - roleCreate.js (0.42 KB)
+      - roleDelete.js (0.43 KB)
+      - roleUpdate.js (1.41 KB)
+  - [interactions]
+    - [Buttons]
+      - placeholder (0 KB)
+    - [Modals]
+      - placeholder (0 KB)
+    - [StringSelectMenus]
+      - permissionsMenu.js (6.16 KB)
+  - bot.js (6.07 KB)
+- [components]
+  - configManager.js (5.18 KB)
+  - json5Parser.js (1.17 KB)
+- [config]
+  - [bot]
+    - blacklist.json5 (0.07 KB)
+    - commands.json5 (0.03 KB)
+    - config.json5 (1.46 KB)
+    - events.json5 (0 KB)
+    - intents.json5 (0.54 KB)
+    - logging.json5 (0.52 KB)
+    - managed.json (2.81 KB)
+    - README.md (20.12 KB)
+    - status.json5 (0.23 KB)
+- .gitignore (0.46 KB)
+- eslint.config.cjs (5.21 KB)
+- LICENSE (11.25 KB)
+- package-lock.json (152.3 KB)
+- package.json (1.29 KB)
+- README.md (8.48 KB)
+- start.bat (1.36 KB)
+- start.sh (1.32 KB)
+- structure.md (3.55 KB)
