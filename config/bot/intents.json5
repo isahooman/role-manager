@@ -10,7 +10,7 @@
   GuildInvites: false,
   GuildVoiceStates: false,
   GuildPresences: false,
-  GuildMessageReactions: false,
+  GuildMessageReactions: true,
   GuildMessageTyping: false,
 
   DirectMessages: true,

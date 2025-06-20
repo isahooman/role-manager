@@ -27,6 +27,7 @@ module.exports = {
       let target = message.member;
       let isSelf = true;
 
+      // Search for the user based on arguments
       if (args.length > 0) {
         const query = args.join(' ');
         logger.debug(`[Collection Command] Searching for user: ${query}`);
