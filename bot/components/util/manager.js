@@ -194,32 +194,37 @@ class RoleManager {
    * Add a role manager
    * @param {string} guildId - Discord guild ID
    * @param {string} roleId - Role ID to manage
-   * @param {string} userId - User ID to add as manager
+   * @param {string} target - User ID to add as manager
+   * @param {object} user - User requesting manager addition
    * @returns {boolean} Success status
    * @author isahooman
    */
-  addRoleManager(guildId, roleId, userId) {
-    if (!this.validateInputs(guildId, roleId, userId)) {
+  addRoleManager(guildId, roleId, target, user) {
+    if (!this.validateInputs(guildId, roleId, target)) {
       logger.warn(`[Manager Util] Invalid inputs received for addRoleManager`);
+      return false;
+    }
+
+    // Check if user has permission to config role managers
+    if (user && !this.isServerAdmin(user)) {
+      logger.warn(`[Manager Util] User ${user.id} (${user.user?.tag}) lacks permission to add role managers`);
       return false;
     }
 
     try {
       // Get existing guild data
       const guildData = this.getGuildData(guildId);
-
-      // Check if user is already a manager
       if (!guildData.roles[roleId]) {
         logger.debug(`[Manager Util] Creating new role manager array for role ${roleId}`);
         guildData.roles[roleId] = [];
-      } else if (guildData.roles[roleId].includes(userId)) {
-        logger.info(`[Manager Util] User ${userId} is already a manager for role ${roleId}`);
+      } else if (guildData.roles[roleId].includes(target)) {
+        logger.info(`[Manager Util] User ${target} is already a manager for role ${roleId}`);
         return false;
       }
 
       // Add user as manager for target role
-      guildData.roles[roleId].push(userId);
-      logger.info(`[Manager Util] Added user ${userId} as manager for role ${roleId} in guild ${guildId}`);
+      guildData.roles[roleId].push(target);
+      logger.info(`[Manager Util] Added user ${target} as manager for role ${roleId} in guild ${guildId}`);
 
       // Save and return the result
       return this.saveData(this.cache);
@@ -233,32 +238,37 @@ class RoleManager {
    * Remove a role manager
    * @param {string} guildId - Discord guild ID
    * @param {string} roleId - Role ID
-   * @param {string} userId - User ID to remove
+   * @param {string} target - User ID to remove
+   * @param {object} user - User requesting manager removal
    * @returns {boolean} Success status
    * @author isahooman
    */
-  removeRoleManager(guildId, roleId, userId) {
-    if (!this.validateInputs(guildId, roleId, userId)) {
+  removeRoleManager(guildId, roleId, target, user) {
+    if (!this.validateInputs(guildId, roleId, target)) {
       logger.warn(`[Manager Util] Invalid inputs received for removeRoleManager`);
+      return false;
+    }
+
+    // Check if user has permission to cofig role managers
+    if (user && !this.isServerAdmin(user)) {
+      logger.warn(`[Manager Util] User ${user.id} (${user.user?.tag}) lacks permission to remove role managers`);
       return false;
     }
 
     try {
       // Get existing guild data
       const guildData = this.getGuildData(guildId);
-
-      // Check if user is a manager
       if (!guildData.roles[roleId]) {
         logger.debug(`[Manager Util] Role ${roleId} has no managers to remove from`);
         return false;
-      } else if (!guildData.roles[roleId].includes(userId)) {
-        logger.info(`[Manager Util] User ${userId} is not a manager for role ${roleId}`);
+      } else if (!guildData.roles[roleId].includes(target)) {
+        logger.info(`[Manager Util] User ${target} is not a manager for role ${roleId}`);
         return false;
       }
 
       // Remove user as manager from target role
-      guildData.roles[roleId] = guildData.roles[roleId].filter(id => id !== userId);
-      logger.info(`[Manager Util] Removed user ${userId} as manager for role ${roleId} in guild ${guildId}`);
+      guildData.roles[roleId] = guildData.roles[roleId].filter(id => id !== target);
+      logger.info(`[Manager Util] Removed user ${target} as manager for role ${roleId} in guild ${guildId}`);
 
       // Clean up empty role arrays
       if (guildData.roles[roleId].length === 0) {
@@ -394,6 +404,46 @@ class RoleManager {
 
     logger.debug(`[Manager Util] Member ${userId} ${isManager ? 'is' : 'is not'} a server manager`);
     return isManager;
+  }
+
+  /**
+   * Check if a user has management permissions (admin, guild owner, or server manager)
+   * @param {object} member - Discord guild member
+   * @returns {boolean} True if user is a server admin
+   * @author isahooman
+   */
+  isServerAdmin(member) {
+    if (!member?.guild?.id) {
+      logger.warn('[Manager Util] Invalid member object received for isServerAdmin');
+      return false;
+    }
+
+    const { guild, id: userId } = member;
+    const userTag = member.user?.tag || 'Unknown';
+
+    logger.debug(`[Manager Util] Checking management permissions for user ${userId} (${userTag})`);
+
+    // Check if user is the guild owner
+    if (userId === guild.ownerId) {
+      logger.debug(`[Manager Util] ${userTag} is the guild owner and has management permissions`);
+      return true;
+    }
+
+    // Check if the user has admin permissions
+    if (member.permissions.has(PermissionFlagsBits.Administrator)) {
+      logger.debug(`[Manager Util] ${userTag} has Administrator permission and has management permissions`);
+      return true;
+    }
+
+    // Check if the user is a server manager
+    if (this.isServerManager(member)) {
+      logger.debug(`[Manager Util] ${userTag} is a server manager and has management permissions`);
+      return true;
+    }
+
+    // No management permission
+    logger.debug(`[Manager Util] ${userTag} has no management permissions`);
+    return false;
   }
 
   /**
