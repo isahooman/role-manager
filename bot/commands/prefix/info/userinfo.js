@@ -3,31 +3,35 @@ const { EmbedBuilder } = require('discord.js');
 const Search = require('../../../components/util/search');
 
 const badges = {
+  // Misc
   Staff: 'Discord Staff',
   Partner: 'Partnered Server Owner',
+  CertifiedModerator: 'Moderator Program Alumni',
+  PremiumEarlySupporter: 'Early Supporter',
 
-  // Bug Hunter badges
-  BugHunterLevel1: 'Bug Hunter Level 1',
-  BugHunterLevel2: 'Bug Hunter Level 2',
-
-  // HypeSquad Events badges
+  // HypeSquad badges
   Hypesquad: 'HypeSquad Events Member',
   HypeSquadOnlineHouse1: 'HypeSquad Bravery',
   HypeSquadOnlineHouse2: 'HypeSquad Brilliance',
   HypeSquadOnlineHouse3: 'HypeSquad Balance',
 
-  // Flagged accounts
+  // Bug Hunter badges
+  BugHunterLevel1: 'Bug Hunter Level 1',
+  BugHunterLevel2: 'Bug Hunter Level 2',
+
+  // Developer badges
+  VerifiedDeveloper: 'Early Verified Bot Developer',
+  ActiveDeveloper: 'Active Developer',
+  Collaborator: 'Collaborator',
+  RestrictedCollaborator: 'Restricted Collaborator',
+
+  // Bot badges
+  VerifiedBot: 'Verified Bot',
+  BotHTTPInteractions: 'Bot HTTP Interactions',
+
+  // Account status badges
   Spammer: 'Spammer',
   Quarantined: 'Quarantined Account',
-
-  // Dev badges
-  ActiveDeveloper: 'Active Developer',
-  VerifiedDeveloper: 'Early Verified Bot Developer',
-
-  // Misc badges
-  VerifiedBot: 'Verified Bot',
-  PremiumEarlySupporter: 'Early Supporter',
-  CertifiedModerator: 'Discord Certified Moderator',
 };
 
 module.exports = {
@@ -83,7 +87,8 @@ module.exports = {
       // Add user badges
       const flags = fetchedUser.flags.serialize();
       const flagString = Object.entries(flags)
-        .filter(([value]) => value)
+        // eslint-disable-next-line no-unused-vars
+        .filter(([_, value]) => value)
         .map(([flag]) => `- ${badges[flag] || flag}`)
         .join('\n');
 
