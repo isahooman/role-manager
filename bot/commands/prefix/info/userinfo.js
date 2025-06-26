@@ -95,8 +95,7 @@ module.exports = {
       // Send the embed
       return message.channel.send({ embeds: [embed] });
     } catch (error) {
-      logger.error(`[UserInfo Command] Error: ${error.message}`);
-      return message.channel.send({ content: 'There was an error fetching user information.' });
+      throw new Error(`[UserInfo Command] Error fetching user info: ${error.message}`);
     }
   },
 };
