@@ -2,11 +2,12 @@ const logger = require('../../components/util/logger.js');
 const { ActivityType } = require('discord.js');
 const { cache } = require('../../bot.js');
 const configManager = require('../../../components/configManager');
+const roleManager = require('../../components/util/role-manager');
 
 module.exports = {
   name: 'ready',
   once: true,
-  execute(client) {
+  async execute(client) {
     logger.start(`Logged in as ${client.user.tag}!`);
     logger.debug('Bot is ready and online.');
 
@@ -15,9 +16,25 @@ module.exports = {
     cache.cacheChannels(client);
     cache.cacheThreads(client);
     cache.cacheRoles(client);
+
+    // Cache members for each guild
+    const memberCache = [];
     client.guilds.cache.forEach(guild => {
-      cache.cacheMembers(guild);
+      memberCache.push(cache.cacheMembers(guild));
     });
+
+    // Wait for all member caching to complete
+    await Promise.all(memberCache);
+    logger.info('All cache data collection completed');
+
+    // Validate database roles after caching is complete
+    try {
+      const cleanup = await roleManager.validateDatabaseRoles(client);
+      if (cleanup.removedServerManagers > 0 || cleanup.removedRoleManagers > 0) logger.info(`Database cleanup completed: ${cleanup.removedServerManagers} server managers and ${cleanup.removedRoleManagers} role managers removed`);
+      else logger.debug('Database validation completed - no cleanup needed');
+    } catch (error) {
+      logger.error(`Failed to validate database roles: ${error.message}`);
+    }
 
     // Set the bot status status
     const updateStatus = () => {

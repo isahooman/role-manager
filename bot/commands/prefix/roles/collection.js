@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const logger = require('../../../components/util/logger.js');
 const { cache } = require('../../../bot.js');
 const Search = require('../../../components/util/search.js');
-const roleManager = require('../../../components/util/manager.js');
+const roleManager = require('../../../components/util/role-manager.js');
 
 module.exports = {
   name: 'collection',
@@ -15,7 +15,7 @@ module.exports = {
     try {
       // Load guild's managed roles
       const guildId = message.guild.id;
-      const managedRoleIds = roleManager.getManagedRoles(guildId);
+      const managedRoleIds = await roleManager.getManagedRoles(guildId);
 
       // Check if the guild has managed roles
       if (!managedRoleIds.length) {
