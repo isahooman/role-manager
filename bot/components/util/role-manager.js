@@ -1,6 +1,10 @@
 const { PermissionFlagsBits } = require('discord.js');
 const dbHandler = require('../core/dbHandler');
 const logger = require('./logger');
+const fs = require('fs');
+const path = require('path');
+
+const PREVIEWS_DIR = path.join(__dirname, '../../../output/previews/');
 
 class RoleManager {
   constructor() {
@@ -175,6 +179,47 @@ class RoleManager {
    */
   getServerManagers(guildId) {
     return this.validateInputs(guildId) ? this.db.getServerManagers(guildId) : [];
+  }
+
+  /**
+   * Clean up role preview data for a user
+   * @param {string} userId - Discord user ID
+   * @param {string} messageId - Discord message ID to cleanup global data
+   * @returns {Promise<void>}
+   * @author isahooman
+   */
+  async cleanupRolePreview(userId, messageId = null) {
+    try {
+      // Clean up preview files
+      if (fs.existsSync(PREVIEWS_DIR)) {
+        const files = fs.readdirSync(PREVIEWS_DIR);
+        files.forEach(file => {
+          if (file.startsWith(userId)) {
+            const filePath = path.join(PREVIEWS_DIR, file);
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
+
+      // Clean up global data
+      if (global.rolePreviewData) {
+        if (messageId) {
+          // Clean up data linked to the message ID
+          delete global.rolePreviewData[messageId];
+        } else {
+          // Search for all global data linked to the user ID
+          Object.keys(global.rolePreviewData).forEach(msgId => {
+            if (global.rolePreviewData[msgId]?.userId === userId) {
+              delete global.rolePreviewData[msgId];
+            }
+          });
+        }
+      }
+
+      logger.info(`[Role Manager] Cleaned up preview data for user ${userId}${messageId ? ` (message: ${messageId})` : ''}`);
+    } catch (error) {
+      logger.error(`Error cleaning up role preview data: ${error.message}`);
+    }
   }
 
   /**

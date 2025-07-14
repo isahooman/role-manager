@@ -3,10 +3,12 @@ const Canvas = require('canvas');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
-const { fetch } = require('node-fetch');
-const configManager = require('../../../../../components/configManager');
+const roleManager = require('../../../../components/util/role-manager');
 
 const PREVIEWS_DIR = path.join(__dirname, '../../../../../output/previews/');
+
+// Initialize global preview data storage
+if (!global.rolePreviewData) global.rolePreviewData = {};
 
 // Ensure previews directory exists
 if (!fs.existsSync(PREVIEWS_DIR)) fs.mkdirSync(PREVIEWS_DIR, { recursive: true });
@@ -43,9 +45,8 @@ module.exports = {
       // Check bot permissions
       if (!await this.checkBotPermissions(interaction, role)) return;
 
-      // Load manager data and check user permissions
-      const managedData = configManager.loadConfig('managed');
-      if (!await this.checkUserPermissions(interaction, managedData, role)) return interaction.reply('You do not have permission to manage this role.');
+      // Check user permissions using RoleManager
+      if (!await roleManager.checkPermission(interaction.member, role)) return interaction.reply('You do not have permission to manage this role.');
 
       // Execute the subcommand if permissions are valid
       switch (subcommand) {
@@ -55,7 +56,10 @@ module.exports = {
         case 'customize':
           return this.handleCustomize(interaction, role);
         default:
-          return interaction.reply({ content: 'Invalid subcommand.', ephemeral: true });
+          return interaction.reply({
+            content: 'Invalid subcommand.',
+            flags: 64, // Ephemeral
+          });
       }
     } catch (error) {
       throw new Error(`Error executing role command: ${error.message}`);
@@ -87,28 +91,6 @@ module.exports = {
   },
 
   /**
-   * Checks if the user has permission to manage the specified role
-   * @param {object} interaction - The Discord interaction object
-   * @param {object} managedData - Configuration data containing role management permissions
-   * @param {object} role - The Discord role to check permissions for
-   * @returns {boolean} True if the user can manage this role, false otherwise
-   * @author isahooman
-   */
-  checkUserPermissions(interaction, managedData, role) {
-    const { guild, user, member } = interaction;
-    const guildId = guild.id;
-    const authorId = user.id;
-
-    // Check if user can manage this role
-    const userIsRoleManager = managedData[guildId]?.hasOwnProperty(role.id) && managedData[guildId][role.id]?.includes(authorId);
-    const isServerManager = managedData[guildId]?.server_manager && member.roles.cache.has(managedData[guildId].server_manager);
-    const isServerOwner = user.id === guild.ownerId;
-    const isAdmin = member.permissions.has(PermissionFlagsBits.Administrator);
-
-    return userIsRoleManager || isServerManager || isServerOwner || isAdmin;
-  },
-
-  /**
    * Handles adding or removing roles from users
    * @param {object} interaction - Discord interaction object containing command data
    * @param {object} role - The Discord role to manage
@@ -120,10 +102,13 @@ module.exports = {
     const user = interaction.options.getUser('user');
     try {
       const member = await interaction.guild.members.fetch(user);
-      if (!member) return interaction.reply({ content: 'The specified user is not a member of this guild.', ephemeral: true });
+      if (!member) return interaction.reply({
+        content: 'The specified user is not a member of this guild.',
+        flags: 64, // Ephemeral
+      });
 
       // Block role management towards bots
-      if (member.user.bot) return interaction.reply({ content: `You cannot ${action} roles ${action === 'add' ? 'to' : 'from'} bots.`, ephemeral: true });
+      if (member.user.bot) return interaction.reply(`You cannot ${action} roles ${action === 'add' ? 'to' : 'from'} bots.`);
 
       // Add or remove the role based on the action
       if (action === 'add') {
@@ -154,14 +139,15 @@ module.exports = {
     // Check if any customization option was provided
     if (!roleName && !roleColor) return interaction.reply({
       content: 'Please provide at least one customization option (name or color).',
-      ephemeral: true,
+      flags: 64, // Ephemeral
     });
 
     try {
       // Handle name change
       if (roleName && !roleColor) {
+        const oldName = role.name;
         const updatedRole = await role.edit({ name: roleName });
-        return interaction.reply(`Role name changed to ${updatedRole.name}.`);
+        return interaction.reply(`Role name changed from \`${oldName}\` to \`${updatedRole.name}\``);
       }
 
       // Handle color change
@@ -172,7 +158,7 @@ module.exports = {
         const validHexColor = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
         if (!validHexColor.test(roleColor)) return interaction.reply({
           content: 'Invalid color format. Please provide a valid hex color code.',
-          ephemeral: true,
+          flags: 64, // Ephemeral
         });
 
         // Create and send customization preview
@@ -184,7 +170,7 @@ module.exports = {
   },
 
   /**
-   * Displays an interactive preview of role color changes with theme switching support
+   * Displays an interactive preview of role color changes
    * @param {interaction} interaction - The Discord interaction object
    * @param {role} role - The role being customized
    * @param {string} roleColor - Hex color code for the role
@@ -199,141 +185,63 @@ module.exports = {
     const displayName = member.displayName;
 
     // Generate theme previews
-    const darkPreviewPath = await this.savePreviewCanvas('#36393F', userId, 'dark', userAvatarUrl, roleColor, displayName);
-    const lightPreviewPath = await this.savePreviewCanvas('#FFFFFF', userId, 'light', userAvatarUrl, roleColor, displayName);
+    const darkPreviewPath = await this.savePreviewCanvas('#36393F', 'dark', userId, userAvatarUrl, displayName, roleColor);
+    const lightPreviewPath = await this.savePreviewCanvas('#FFFFFF', 'light', userId, userAvatarUrl, displayName, roleColor);
 
-    // Create component row with confirmation buttons
+    // Create button components
     const actionRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId('confirm')
+        .setCustomId('rolePreviewConfirm')
         .setLabel('Confirm')
         .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
-        .setCustomId('cancel')
+        .setCustomId('rolePreviewCancel')
         .setLabel('Cancel')
         .setStyle(ButtonStyle.Danger),
       new ButtonBuilder()
-        .setCustomId('switch')
+        .setCustomId('rolePreviewSwitch')
         .setLabel('Switch Theme')
         .setStyle(ButtonStyle.Secondary),
     );
 
     // Send initial preview with dark theme
-    let currentPreview = { path: darkPreviewPath, theme: 'Dark mode' };
     const message = await interaction.reply({
-      content: `Preview of the new color (${currentPreview.theme}):`,
-      files: [{ attachment: currentPreview.path }],
+      content: 'Preview of the new color (Dark mode):',
+      files: [{ attachment: darkPreviewPath }],
       components: [actionRow],
-      fetchReply: true,
-    });
+    }).then(() => interaction.fetchReply());
 
-    // Set up 30 second interaction collector
-    const collector = message.createMessageComponentCollector({
-      time: 30000,
-    });
+    // Store preview data in global storagage for interaction handlers
+    global.rolePreviewData[message.id] = {
+      role: { id: role.id, name: role.name },
+      roleColor,
+      roleName,
+      userId,
+      currentTheme: 'dark',
+      darkPreviewPath,
+      lightPreviewPath,
+    };
 
-    collector.on('collect', async buttonInteraction => {
-      // only allow the original user to interact with the buttons
-      if (buttonInteraction.user.id !== interaction.user.id) return;
-
-      switch (buttonInteraction.customId) {
-        case 'confirm':
-          await this.handleConfirmation(buttonInteraction, role, roleColor, roleName);
-          break;
-
-        case 'cancel':
-          await buttonInteraction.update({
-            content: 'Role customization cancelled.',
-            files: [],
-            components: [],
-          });
-          break;
-
-        case 'switch':
-          // Toggle between dark and light themes
-          currentPreview = currentPreview.theme === 'Dark mode' ?
-            { path: lightPreviewPath, theme: 'Light mode' } :
-            { path: darkPreviewPath, theme: 'Dark mode' };
-
-          await buttonInteraction.update({
-            content: `Preview of the new color (${currentPreview.theme}):`,
-            files: [{ attachment: currentPreview.path }],
-            components: [actionRow],
-          });
-          break;
+    // Start a cleanup timer
+    setTimeout(async () => {
+      if (global.rolePreviewData[message.id]) {
+        await roleManager.cleanupRolePreview(userId, message.id);
       }
-    });
-
-    // Clean up preview files when collector ends
-    collector.on('end', () => {
-      this.cleanupPreviewFiles(userId);
-    });
-  },
-
-  /**
-   * Handles the confirmation of role customization
-   * @param {ButtonInteraction} buttonInteraction - The button interaction
-   * @param {role} role - The role to update
-   * @param {string} roleColor - The hex color code
-   * @param {string|null} roleName - The new role name (if provided)
-   * @author isahooman
-   */
-  async handleConfirmation(buttonInteraction, role, roleColor, roleName) {
-    try {
-      // Build update object
-      const updates = { color: parseInt(roleColor.replace('#', ''), 16) };
-      if (roleName) updates.name = roleName;
-
-      // Update the role with the new color and name
-      const updatedRole = await role.edit(updates);
-
-      // Send confirmation
-      await buttonInteraction.update({
-        content: `Successfully customized role ${updatedRole.name}.`,
-        files: [],
-        components: [],
-      });
-
-      // Clean up preview files once done
-      this.cleanupPreviewFiles(buttonInteraction.user.id);
-    } catch (error) {
-      throw new Error(`Error updating role: ${error.message}`);
-    }
-  },
-
-  /**
-   * Removes all preview images created for a specific user
-   * @param {string} userId - Discord user ID whose preview files should be deleted
-   * @author isahooman
-   */
-  cleanupPreviewFiles(userId) {
-    try {
-      const files = fs.readdirSync(PREVIEWS_DIR);
-
-      // Delete all files that start with the user's ID
-      files.forEach(file => {
-        if (file.startsWith(userId)) {
-          const filePath = path.join(PREVIEWS_DIR, file);
-          fs.unlinkSync(filePath);
-        }
-      });
-    } catch (error) {
-      throw new Error(`Error cleaning up preview files: ${error.message}`);
-    }
+    }, 30000);
   },
 
   /**
    * Creates and saves a customization preview using Canvas
    * @param {string} backgroundColor - The hex background color
-   * @param {string} userId - Discord user ID for identifying the preview image
    * @param {string} theme - Theme name
+   * @param {string} userId - Discord user ID for naming the preview image
    * @param {string} userAvatarUrl - URL to the user's avatar image
    * @param {string} roleColor - Hex color code for the role being previewed
-   * @param {string} displayName - User's display name to render with the role color
+   * @param {string} displayName - User's display name for user preview
    * @returns {string} Path to the saved preview image
    * @author isahooman
    */
-  async savePreviewCanvas(backgroundColor, userId, theme, userAvatarUrl, roleColor, displayName) {
+  async savePreviewCanvas(backgroundColor, theme, userId, userAvatarUrl, roleColor, displayName) {
     // Create canvas
     const canvas = Canvas.createCanvas(1600, 250);
     const context = canvas.getContext('2d');
@@ -353,7 +261,7 @@ module.exports = {
 
     try {
       // Fetch and process avatar image
-      const response = await fetch(userAvatarUrl);
+      const response = await globalThis.fetch(userAvatarUrl);
       const arrayBuffer = await response.arrayBuffer();
       const buffer = await sharp(Buffer.from(arrayBuffer)).png().toBuffer();
       const userImage = await Canvas.loadImage(buffer);
